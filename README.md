@@ -1,8 +1,8 @@
 # TaskbarStats
 
-**v1.0**
+**v1.1**
 
-Windows のシステムトレイに CPU / RAM / GPU / VRAM の使用率を表示する軽量なトレイアプリケーションです。
+Windows のシステムトレイに CPU / RAM / GPU / VRAM / ディスク / ネットワークの使用率を表示する軽量なトレイアプリケーションです。
 
 ## 機能
 
@@ -12,6 +12,10 @@ Windows のシステムトレイに CPU / RAM / GPU / VRAM の使用率を表示
   - GPU 使用率（NVIDIA: NVAPI / AMD: ADL2 を自動検出）
   - VRAM 使用量 / 総量
   - GPU 温度・クロック（取得できる場合）
+  - 物理ディスクごとのアクティブな時間 %（Disk1, Disk2, …）
+  - イーサネット速度（NET, Mbps）
+- **タスクバー右端の常時ラベル**（固定幅、非表示ラベルは右に詰まる）
+- **表示ラベルの選択**（右クリック「表示ラベル」で各ラベルのチェック ON/OFF）
 - **負荷によるアイコンの色変化**: 70% 以上で黄色、90% 以上で赤
 - **履歴グラフ**（ダブルクリックまたは右クリックメニューから表示）
   - CPU / RAM / GPU / VRAM を直近約 5 分分の折れ線で表示（min / avg / max 付き）
@@ -25,6 +29,7 @@ Windows のシステムトレイに CPU / RAM / GPU / VRAM の使用率を表示
 
 - ホバー: 使用率を表示
 - ダブルクリック / 右クリック「履歴を表示」: 履歴グラフ
+- 右クリック「表示ラベル」: 各ラベル（CPU / RAM / GPU / VRAM / Disk / NET）の表示切替
 - 右クリック「自動実行: OFF/ON」: スタートアップ登録の切替
 - 右クリック「終了」: アプリを終了
 
@@ -59,15 +64,21 @@ TaskbarStats/
   Samplers/NvidiaSampler.cs     GPU（NVAPI）
   Samplers/AmdSampler.cs        GPU（ADL2）
   Samplers/GpuDetector.cs       GPU ベンダ自動検出
+  Samplers/DiskSampler.cs       ディスクのアクティブ時間 %（PDH）
+  Samplers/NetSampler.cs        イーサネット速度（NetworkInformation）
   UI/TrayApp.cs           トレイアイコン / メニュー / タイマー
   UI/HistoryForm.cs       履歴グラフ
   UI/IconFactory.cs       負荷に応じたアイコン生成
+  UI/StatsLabel.cs        タスクバー右端の常時ラベル
   Utils/AutoStart.cs      スタートアップ登録
 TaskbarStats.Core/        純ロジック（OS 非依存）
   Models/SystemStatsSample.cs   1 サンプルのデータ構造
   Samplers/CpuMath.cs       CPU 使用率の計算
+  Samplers/DiskAggregator.cs  ディスク番号ごとの集約
+  Samplers/NetMath.cs       Mbps 換算・上限クランプ
   UI/StatsHistory.cs        サンプル履歴の保持
   UI/LoadLevel.cs           負荷レベル判定（閾値 70/90）
+  UI/StatsFormatter.cs      ラベル / ツールチップ文字列生成
 TaskbarStats.Tests/       単体テスト（Core の純ロジック、Linux でも実行可）
 ```
 
@@ -87,5 +98,5 @@ GPU が検出できない場合、GPU / VRAM の行は「-」で表示され、C
 
 ## 配布物
 
-- `taskbar-stats-v1.0.0-win-x64-selfcontained.zip`: 自己完結型（.NET 8 不要、約 130 MB）
-- `taskbar-stats-v1.0.0-win-x64-frameworkdependent.zip`: 軽量版（.NET 8 Desktop Runtime が必要）
+- `taskbar-stats-v1.1.0-win-x64-selfcontained.zip`: 自己完結型（.NET 8 不要、展開後約 130 MB）
+- `taskbar-stats-v1.1.0-win-x64-frameworkdependent.zip`: 軽量版（.NET 8 Desktop Runtime が必要）

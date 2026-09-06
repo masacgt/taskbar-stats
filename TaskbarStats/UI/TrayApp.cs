@@ -33,17 +33,25 @@ public sealed class TrayApp : IDisposable
     private readonly CpuSampler _cpuSampler = new();
     private readonly RamSampler _ramSampler = new();
     private readonly IGpuSampler? _gpuSampler;
+    private readonly DiskSampler? _diskSampler;
+    private readonly NetSampler _netSampler = new();
     private readonly StatsHistory _history = new();
     private readonly ToolStripMenuItem _autoStartItem;
+    private readonly ToolStripMenuItem _labelsMenu;
     private readonly StatsLabel _label;
 
     private HistoryForm? _historyForm;
     private Icon? _currentIcon;
     private int _tickCount;
+    private string[] _labelOrder = StatsFormatter.BuildLabelOrder(0);
+    private int _diskCount;
+    private readonly HashSet<string> _hiddenLabels = new(StringComparer.Ordinal);
+    private SystemStatsSample? _lastSample;
 
     public TrayApp()
     {
         _gpuSampler = GpuDetector.Create();
+        _diskSampler = DiskSampler.TryCreate();
         _currentIcon = IconFactory.Create(LoadLevelClassifier.GetLevel(0), 0);
 
         _notifyIcon = new NotifyIcon
@@ -56,11 +64,14 @@ public sealed class TrayApp : IDisposable
 
         var menu = new ContextMenuStrip();
         menu.Items.Add("履歴を表示", null, (_, _) => ShowHistoryForm());
+        _labelsMenu = new ToolStripMenuItem("表示ラベル");
+        menu.Items.Add(_labelsMenu);
         _autoStartItem = new ToolStripMenuItem("自動実行: OFF", null, (_, _) => ToggleAutoStart());
         menu.Items.Add(_autoStartItem);
         menu.Items.Add(new ToolStripSeparator());
         menu.Items.Add("終了", null, (_, _) => Exit());
         _notifyIcon.ContextMenuStrip = menu;
+        RebuildLabelMenu();
         RefreshAutoStartLabel();
 
         _label = new StatsLabel();
@@ -93,7 +104,7 @@ public sealed class TrayApp : IDisposable
         if (_tickCount++ == 0)
         {
             CrashLog.Write(
-                $"first sample: CPU={sample.CpuPercent:0}% RAM={sample.RamPercent:0}% GPU={sample.GpuPercent?.ToString("0") ?? "--"}% VRAM={sample.VramPercent?.ToString("0") ?? "--"}% gpu={sample.GpuName ?? "none"}",
+                $"first sample: CPU={sample.CpuPercent:0}% RAM={sample.RamPercent:0}% GPU={sample.GpuPercent?.ToString("0") ?? "--"}% VRAM={sample.VramPercent?.ToString("0") ?? "--"}% disks={sample.DiskBusyPercents?.Length ?? 0} net={sample.NetMbps?.ToString("0") ?? "--"}Mbps gpu={sample.GpuName ?? "none"}",
                 null);
         }
 
@@ -119,6 +130,8 @@ public sealed class TrayApp : IDisposable
         double cpu = _cpuSampler.Sample();
         (long ramTotal, long ramAvailable) = _ramSampler.Sample();
         GpuSnapshot? gpu = _gpuSampler?.Sample();
+        double[]? disks = _diskSampler?.Sample();
+        double? netMbps = _netSampler.Sample();
 
         return new SystemStatsSample
         {
@@ -133,14 +146,19 @@ public sealed class TrayApp : IDisposable
             GpuVendor = gpu?.Vendor,
             GpuTempCelsius = gpu?.TemperatureC,
             GpuClockMHz = gpu?.ClockMHz,
+            DiskBusyPercents = disks,
+            NetMbps = netMbps,
         };
     }
 
     private void UpdateUi(SystemStatsSample sample)
     {
+        _lastSample = sample;
+        UpdateLabelOrder(sample.DiskBusyPercents?.Length ?? 0);
+
         int maxPercent = (int)Math.Round(sample.MaxPercent);
-        _notifyIcon.Text = FormatTooltip(sample);
-        _label.UpdateText(FormatSummary(sample));
+        _notifyIcon.Text = StatsFormatter.BuildTooltip(sample, VisibleLabels());
+        _label.UpdateText(StatsFormatter.BuildSummary(sample, VisibleLabels()));
 
         Icon newIcon = IconFactory.Create(LoadLevelClassifier.GetLevel(maxPercent), maxPercent);
         Icon? oldIcon = _currentIcon;
@@ -192,56 +210,55 @@ public sealed class TrayApp : IDisposable
         Application.Exit();
     }
 
-    public static string FormatTooltip(SystemStatsSample sample)
+    private void UpdateLabelOrder(int diskCount)
     {
-        var lines = new List<string>
+        // ディスク数変化(USB接続等)時はラベル順序とメニューを再構築。0 は初期値のまま。
+        if (diskCount > 0 && diskCount != _diskCount)
         {
-            $"CPU   {sample.CpuPercent:F0}%",
-            $"RAM   {sample.RamPercent:F0}%  ({FormatGib(sample.RamUsedBytes)}/{FormatGib(sample.RamTotalBytes)} GB)",
-        };
-
-        if (sample.GpuPercent is double gpu)
-        {
-            string name = string.IsNullOrWhiteSpace(sample.GpuName) ? string.Empty : $"  ({sample.GpuName})";
-            lines.Add($"GPU   {gpu:F0}%{name}");
+            _diskCount = diskCount;
+            _labelOrder = StatsFormatter.BuildLabelOrder(diskCount);
+            RebuildLabelMenu();
         }
-        else
-        {
-            lines.Add("GPU   -   (GPUを検出できません)");
-        }
-
-        if (sample.VramPercent is double vram)
-        {
-            lines.Add($"VRAM  {vram:F0}%  ({FormatGib(sample.VramUsedBytes ?? 0)}/{FormatGib(sample.VramTotalBytes ?? 0)} GB)");
-        }
-        else
-        {
-            lines.Add("VRAM  -");
-        }
-
-        if (sample.GpuTempCelsius is int temp && sample.GpuClockMHz is int clock)
-        {
-            lines.Add($"{temp}°C / {clock} MHz");
-        }
-        else if (sample.GpuTempCelsius is { } temperature)
-        {
-            lines.Add($"{temperature}°C");
-        }
-        else if (sample.GpuClockMHz is { } clockOnly)
-        {
-            lines.Add($"{clockOnly} MHz");
-        }
-
-        return string.Join(Environment.NewLine, lines);
     }
 
-    public static string FormatGib(long bytes)
-        => bytes > 0 ? (bytes / 1073741824.0).ToString("F1") : "0.0";
+    private string[] VisibleLabels()
+        => _labelOrder.Where(l => !_hiddenLabels.Contains(l)).ToArray();
 
-    public static string FormatSummary(SystemStatsSample sample)
-        => $"CPU {FormatPercent(sample.CpuPercent)}%  RAM {FormatPercent(sample.RamPercent)}%  GPU {FormatPercent(sample.GpuPercent)}%  VRAM {FormatPercent(sample.VramPercent)}%";
+    private void RefreshNow()
+    {
+        if (_lastSample is { } sample)
+        {
+            _notifyIcon.Text = StatsFormatter.BuildTooltip(sample, VisibleLabels());
+            _label.UpdateText(StatsFormatter.BuildSummary(sample, VisibleLabels()));
+        }
+    }
 
-    private static string FormatPercent(double? value) => value?.ToString("0").PadLeft(3) ?? " --";
+    private void RebuildLabelMenu()
+    {
+        _labelsMenu.DropDownItems.Clear();
+        foreach (string label in _labelOrder)
+        {
+            var item = new ToolStripMenuItem(label)
+            {
+                CheckOnClick = true,
+                Checked = !_hiddenLabels.Contains(label),
+            };
+            item.CheckedChanged += (_, _) =>
+            {
+                if (item.Checked)
+                {
+                    _hiddenLabels.Remove(label);
+                }
+                else
+                {
+                    _hiddenLabels.Add(label);
+                }
+
+                RefreshNow();
+            };
+            _labelsMenu.DropDownItems.Add(item);
+        }
+    }
 
     public void Dispose()
     {
@@ -251,6 +268,7 @@ public sealed class TrayApp : IDisposable
         _notifyIcon.Dispose();
         _historyForm?.Dispose();
         _gpuSampler?.Dispose();
+        _diskSampler?.Dispose();
         if (_currentIcon is not null)
         {
             DestroyIcon(_currentIcon.Handle);

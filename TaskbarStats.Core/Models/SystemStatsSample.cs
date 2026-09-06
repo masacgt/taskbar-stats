@@ -24,6 +24,10 @@ public sealed record SystemStatsSample
 
     public int? GpuClockMHz { get; init; }
 
+    public double[]? DiskBusyPercents { get; init; }
+
+    public double? NetMbps { get; init; }
+
     public long RamUsedBytes => Math.Max(0, RamTotalBytes - RamAvailableBytes);
 
     public double RamPercent => RamTotalBytes > 0 ? (double)RamUsedBytes / RamTotalBytes * 100.0 : 0.0;

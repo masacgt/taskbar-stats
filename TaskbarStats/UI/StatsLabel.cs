@@ -17,9 +17,7 @@ public sealed class StatsLabel : Form
     private const int PaddingLeft = 8;
     private const int PaddingRight = 8;
 
-    private static readonly string MaxText = "CPU 100%  RAM 100%  GPU 100%  VRAM 100%";
-
-    private string _text = "CPU  --%  RAM  --%  GPU  --%  VRAM  --%";
+    private string _text = "CPU  --%  RAM  --%  GPU  --%  VRAM  --%  NET   --Mbps";
 
     public StatsLabel()
     {
@@ -32,7 +30,7 @@ public sealed class StatsLabel : Form
         ForeColor = Color.FromArgb(240, 240, 240);
         Font = new Font("Consolas", 8.25f, FontStyle.Bold);
         Text = _text;
-        Size = Measure(MaxText);
+        Size = Measure(_text);
         Location = ComputeLocation();
         DoubleBuffered = true;
     }
@@ -73,6 +71,8 @@ public sealed class StatsLabel : Form
         {
             _text = text;
             Text = text;
+            Size = Measure(_text);
+            Location = ComputeLocation();
             Invalidate();
         }
         catch (Exception ex)
