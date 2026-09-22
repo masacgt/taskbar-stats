@@ -26,7 +26,9 @@ public sealed record SystemStatsSample
 
     public double[]? DiskBusyPercents { get; init; }
 
-    public double? NetMbps { get; init; }
+    public double? LanMbps { get; init; }
+
+    public double? WifiMbps { get; init; }
 
     public long RamUsedBytes => Math.Max(0, RamTotalBytes - RamAvailableBytes);
 

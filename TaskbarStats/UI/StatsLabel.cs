@@ -17,7 +17,7 @@ public sealed class StatsLabel : Form
     private const int PaddingLeft = 8;
     private const int PaddingRight = 8;
 
-    private string _text = "CPU  --%  RAM  --%  GPU  --%  VRAM  --%  NET   --Mbps";
+    private string _text = "CPU  --%  RAM  --%  GPU  --%  VRAM  --%  LAN  --Mbps  WIFI --Mbps";
 
     public StatsLabel()
     {

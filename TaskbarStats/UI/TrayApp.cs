@@ -112,7 +112,7 @@ public sealed class TrayApp : IDisposable
         if (_tickCount++ == 0)
         {
             CrashLog.Write(
-                $"first sample: CPU={sample.CpuPercent:0}% RAM={sample.RamPercent:0}% GPU={sample.GpuPercent?.ToString("0") ?? "--"}% VRAM={sample.VramPercent?.ToString("0") ?? "--"}% disks={sample.DiskBusyPercents?.Length ?? 0} net={sample.NetMbps?.ToString("0") ?? "--"}Mbps gpu={sample.GpuName ?? "none"}",
+                $"first sample: CPU={sample.CpuPercent:0}% RAM={sample.RamPercent:0}% GPU={sample.GpuPercent?.ToString("0") ?? "--"}% VRAM={sample.VramPercent?.ToString("0") ?? "--"}% disks={sample.DiskBusyPercents?.Length ?? 0} lan={sample.LanMbps?.ToString("0") ?? "--"}Mbps wifi={sample.WifiMbps?.ToString("0") ?? "--"}Mbps gpu={sample.GpuName ?? "none"}",
                 null);
         }
 
@@ -139,7 +139,7 @@ public sealed class TrayApp : IDisposable
         (long ramTotal, long ramAvailable) = _ramSampler.Sample();
         GpuSnapshot? gpu = _gpuSampler?.Sample();
         double[]? disks = _diskSampler?.Sample();
-        double? netMbps = _netSampler.Sample();
+        (double? lanMbps, double? wifiMbps) = _netSampler.Sample();
 
         return new SystemStatsSample
         {
@@ -155,7 +155,8 @@ public sealed class TrayApp : IDisposable
             GpuTempCelsius = gpu?.TemperatureC,
             GpuClockMHz = gpu?.ClockMHz,
             DiskBusyPercents = disks,
-            NetMbps = netMbps,
+            LanMbps = lanMbps,
+            WifiMbps = wifiMbps,
         };
     }
 
@@ -165,8 +166,8 @@ public sealed class TrayApp : IDisposable
         UpdateLabelOrder(sample.DiskBusyPercents?.Length ?? 0);
 
         int maxPercent = (int)Math.Round(sample.MaxPercent);
-        _notifyIcon.Text = StatsFormatter.BuildTooltip(sample, VisibleLabels());
         _label.UpdateText(StatsFormatter.BuildSummary(sample, VisibleLabels()));
+        SetNotifyTooltip(sample);
 
         Icon newIcon = IconFactory.Create(LoadLevelClassifier.GetLevel(maxPercent), maxPercent);
         Icon? oldIcon = _currentIcon;
@@ -243,9 +244,18 @@ public sealed class TrayApp : IDisposable
     {
         if (_lastSample is { } sample)
         {
-            _notifyIcon.Text = StatsFormatter.BuildTooltip(sample, VisibleLabels());
             _label.UpdateText(StatsFormatter.BuildSummary(sample, VisibleLabels()));
+            SetNotifyTooltip(sample);
         }
+    }
+
+    private void SetNotifyTooltip(SystemStatsSample sample)
+    {
+        // NotifyIcon.Text is limited to 63 characters on Windows. A full
+        // multi-line tooltip can exceed that limit and throw before the label
+        // gets updated, leaving the taskbar display at its initial "--" text.
+        string tooltip = StatsFormatter.BuildTooltip(sample, VisibleLabels());
+        _notifyIcon.Text = tooltip.Length <= 63 ? tooltip : tooltip[..60] + "...";
     }
 
     private void RebuildLabelMenu()

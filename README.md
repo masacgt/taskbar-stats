@@ -110,4 +110,3 @@ GPU が検出できない場合、GPU / VRAM の行は「-」で表示され、C
 - [`TaskbarStats-v1.2.0-win-x64.exe`](https://github.com/masacgt/taskbar-stats/releases/download/v1.2.0/TaskbarStats-v1.2.0-win-x64.exe): self-contained standalone executable.
 
 The `dist/` directory and ZIP archives are release artifacts and are excluded from the source repository.
-

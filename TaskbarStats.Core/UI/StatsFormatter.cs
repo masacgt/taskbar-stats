@@ -9,9 +9,10 @@ namespace TaskbarStats.UI;
 /// </summary>
 public static class StatsFormatter
 {
-    public const string NetLabel = "NET";
+    public const string LanLabel = "LAN";
+    public const string WifiLabel = "WIFI";
 
-    /// <summary>ラベルの標準順序: CPU, RAM, GPU, VRAM, Disk1..N, NET。</summary>
+    /// <summary>ラベルの標準順序: CPU, RAM, GPU, VRAM, Disk1..N, LAN, WIFI。</summary>
     public static string[] BuildLabelOrder(int diskCount)
     {
         var list = new List<string> { "CPU", "RAM", "GPU", "VRAM" };
@@ -20,7 +21,8 @@ public static class StatsFormatter
             list.Add($"Disk{i}");
         }
 
-        list.Add(NetLabel);
+        list.Add(LanLabel);
+        list.Add(WifiLabel);
         return list.ToArray();
     }
 
@@ -38,7 +40,8 @@ public static class StatsFormatter
         "RAM" => FormatPercent(sample.RamPercent),
         "GPU" => FormatPercent(sample.GpuPercent),
         "VRAM" => FormatPercent(sample.VramPercent),
-        NetLabel => FormatMbits(sample.NetMbps) + "Mbps",
+        LanLabel => FormatMbits(sample.LanMbps) + "Mbps",
+        WifiLabel => FormatMbits(sample.WifiMbps) + "Mbps",
         _ when TryGetDiskNumber(label, out int number)
             && sample.DiskBusyPercents is { } disks
             && number - 1 < disks.Length
@@ -96,9 +99,13 @@ public static class StatsFormatter
                     }
 
                     break;
-                case NetLabel:
-                    string netValue = sample.NetMbps is { } n ? NetMath.ClampMbps(n).ToString() : "--";
-                    lines.Add($"NET   {netValue}Mbps");
+                case LanLabel:
+                    string lanValue = sample.LanMbps is { } lan ? NetMath.ClampMbps(lan).ToString() : "--";
+                    lines.Add($"LAN   {lanValue}Mbps");
+                    break;
+                case WifiLabel:
+                    string wifiValue = sample.WifiMbps is { } wifi ? NetMath.ClampMbps(wifi).ToString() : "--";
+                    lines.Add($"WIFI  {wifiValue}Mbps");
                     break;
                 default:
                     if (TryGetDiskNumber(label, out int number)

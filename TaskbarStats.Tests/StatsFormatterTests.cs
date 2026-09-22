@@ -10,11 +10,11 @@ public class StatsFormatterTests
     public void BuildLabelOrder_InsertsDisksBeforeNet()
     {
         Assert.Equal(
-            new[] { "CPU", "RAM", "GPU", "VRAM", "Disk1", "Disk2", "NET" },
+            new[] { "CPU", "RAM", "GPU", "VRAM", "Disk1", "Disk2", "LAN", "WIFI" },
             StatsFormatter.BuildLabelOrder(2));
 
         Assert.Equal(
-            new[] { "CPU", "RAM", "GPU", "VRAM", "NET" },
+            new[] { "CPU", "RAM", "GPU", "VRAM", "LAN", "WIFI" },
             StatsFormatter.BuildLabelOrder(0));
     }
 
@@ -62,13 +62,14 @@ public class StatsFormatterTests
             GpuPercent = 99.6,
             GpuName = "RTX 3090",
             DiskBusyPercents = new[] { 5.0, 80.0 },
-            NetMbps = 940.2,
+            LanMbps = 940.2,
+            WifiMbps = 120.4,
         };
 
         string summary = StatsFormatter.BuildSummary(sample, StatsFormatter.BuildLabelOrder(2));
 
         Assert.Equal(
-            "CPU  12%  RAM  50%  GPU 100%  VRAM  --%  Disk1   5%  Disk2  80%  NET  940Mbps",
+            "CPU  12%  RAM  50%  GPU 100%  VRAM  --%  Disk1   5%  Disk2  80%  LAN  940Mbps  WIFI  120Mbps",
             summary);
     }
 
@@ -82,12 +83,13 @@ public class StatsFormatterTests
             RamTotalBytes = 8L * 1073741824,
             RamAvailableBytes = 4L * 1073741824,
             GpuPercent = 10.0,
-            NetMbps = 50.0,
+            LanMbps = 50.0,
+            WifiMbps = 25.0,
         };
 
-        string summary = StatsFormatter.BuildSummary(sample, new[] { "CPU", "RAM", "NET" });
+        string summary = StatsFormatter.BuildSummary(sample, new[] { "CPU", "RAM", "LAN", "WIFI" });
 
-        Assert.Equal("CPU   1%  RAM  50%  NET   50Mbps", summary);
+        Assert.Equal("CPU   1%  RAM  50%  LAN   50Mbps  WIFI   25Mbps", summary);
     }
 
     [Fact]
@@ -103,18 +105,21 @@ public class StatsFormatterTests
             GpuName = "RTX 3090",
             GpuTempCelsius = 65,
             GpuClockMHz = 1500,
-            NetMbps = 100.0,
+            LanMbps = 100.0,
+            WifiMbps = 50.0,
         };
 
-        string withGpu = StatsFormatter.BuildTooltip(sample, new[] { "CPU", "RAM", "GPU", "VRAM", "NET" });
+        string withGpu = StatsFormatter.BuildTooltip(sample, new[] { "CPU", "RAM", "GPU", "VRAM", "LAN", "WIFI" });
         Assert.Contains("GPU   50%  (RTX 3090)", withGpu);
         Assert.Contains("65°C / 1500 MHz", withGpu);
-        Assert.Contains("NET   100Mbps", withGpu);
+        Assert.Contains("LAN   100Mbps", withGpu);
+        Assert.Contains("WIFI  50Mbps", withGpu);
 
-        string withoutGpu = StatsFormatter.BuildTooltip(sample, new[] { "CPU", "RAM", "NET" });
+        string withoutGpu = StatsFormatter.BuildTooltip(sample, new[] { "CPU", "RAM", "LAN", "WIFI" });
         Assert.DoesNotContain("65°C", withoutGpu);
         Assert.DoesNotContain("1500 MHz", withoutGpu);
-        Assert.Contains("NET   100Mbps", withoutGpu);
+        Assert.Contains("LAN   100Mbps", withoutGpu);
+        Assert.Contains("WIFI  50Mbps", withoutGpu);
     }
 
     [Fact]
