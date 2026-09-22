@@ -1,6 +1,6 @@
 # TaskbarStats
 
-**v1.1**
+Version 1.1.0
 
 Windows のシステムトレイに CPU / RAM / GPU / VRAM / ディスク / ネットワークの使用率を表示する軽量なトレイアプリケーションです。
 
@@ -23,9 +23,11 @@ Windows のシステムトレイに CPU / RAM / GPU / VRAM / ディスク / ネ�
 - 単一インスタンス（Mutex で二重起動を防止）
 - 自己完結したビルド（.NET 8 不要で実行可能）
 
-## 実行
+## Download and run
 
-配布物のフォルダ内の `TaskbarStats.exe` をダブルクリックするだけです（自己完結型は .NET 8 のインストール不要）。
+Download `taskbar-stats-v1.1.0-win-x64.zip` from GitHub Releases, extract it, and double-click `TaskbarStats.exe`.
+
+The release is self-contained, so .NET 8 does not need to be installed separately.
 
 - ホバー: 使用率を表示
 - ダブルクリック / 右クリック「履歴を表示」: 履歴グラフ
@@ -33,7 +35,7 @@ Windows のシステムトレイに CPU / RAM / GPU / VRAM / ディスク / ネ�
 - 右クリック「自動実行: OFF/ON」: スタートアップ登録の切替
 - 右クリック「終了」: アプリを終了
 
-## ビルド
+## Build
 
 .NET 8 SDK が必要です。
 
@@ -96,7 +98,8 @@ TaskbarStats.Tests/       単体テスト（Core の純ロジック、Linux で�
 
 GPU が検出できない場合、GPU / VRAM の行は「-」で表示され、CPU / RAM の表示は通常通り動作します。
 
-## 配布物
+## Release package
 
-- `taskbar-stats-v1.1.0-win-x64-selfcontained.zip`: 自己完結型（.NET 8 不要、展開後約 130 MB）
-- `taskbar-stats-v1.1.0-win-x64-frameworkdependent.zip`: 軽量版（.NET 8 Desktop Runtime が必要）
+- `taskbar-stats-v1.1.0-win-x64.zip`: self-contained Windows x64 package. .NET 8 is not required.
+
+The `dist/` directory and ZIP archives are release artifacts and are excluded from the source repository.
