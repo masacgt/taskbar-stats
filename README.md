@@ -28,7 +28,7 @@ Windows のシステムトレイに CPU / RAM / GPU / VRAM / ディスク / ネ�
 
 Download one of the following packages from GitHub Releases:
 
-- [TaskbarStats-v1.1.1-win-x64.exe](https://github.com/masacgt/taskbar-stats/releases/latest/download/TaskbarStats-v1.1.1-win-x64.exe)
+- [TaskbarStats.exe](https://github.com/masacgt/taskbar-stats/releases/latest/download/TaskbarStats.exe)
   - Single-file self-contained build
   - .NET 8 is not required
 - [TaskbarStats-v1.1.1-win-x64-framework.zip](https://github.com/masacgt/taskbar-stats/releases/latest/download/TaskbarStats-v1.1.1-win-x64-framework.zip)
@@ -108,7 +108,7 @@ GPU が検出できない場合、GPU / VRAM の行は「-」で表示され、C
 
 ## Release package
 
-- `TaskbarStats-v1.1.1-win-x64.exe`: single-file self-contained Windows x64 build.
+- `TaskbarStats.exe`: single-file self-contained Windows x64 build.
 - `TaskbarStats-v1.1.1-win-x64-framework.zip`: smaller framework-dependent Windows x64 build.
 
 The `dist/` directory and ZIP archives are release artifacts and are excluded from the source repository.
