@@ -26,9 +26,16 @@ Windows のシステムトレイに CPU / RAM / GPU / VRAM / ディスク / ネ�
 
 ## Download and run
 
-Download `taskbar-stats-v1.1.0-win-x64.zip` from GitHub Releases, extract it, and double-click `TaskbarStats.exe`.
+Download one of the following packages from GitHub Releases:
 
-The release is self-contained, so .NET 8 does not need to be installed separately.
+- [TaskbarStats-v1.1.1-win-x64.exe](https://github.com/masacgt/taskbar-stats/releases/latest/download/TaskbarStats-v1.1.1-win-x64.exe)
+  - Single-file self-contained build
+  - .NET 8 is not required
+- [TaskbarStats-v1.1.1-win-x64-framework.zip](https://github.com/masacgt/taskbar-stats/releases/latest/download/TaskbarStats-v1.1.1-win-x64-framework.zip)
+  - Smaller framework-dependent build
+  - Requires the .NET 8 Desktop Runtime
+
+Run the downloaded EXE, or extract the framework-dependent ZIP and run `TaskbarStats.exe`.
 
 - ホバー: 使用率を表示
 - ダブルクリック / 右クリック「履歴を表示」: 履歴グラフ
@@ -101,6 +108,7 @@ GPU が検出できない場合、GPU / VRAM の行は「-」で表示され、C
 
 ## Release package
 
-- `taskbar-stats-v1.1.0-win-x64.zip`: self-contained Windows x64 package. .NET 8 is not required.
+- `TaskbarStats-v1.1.1-win-x64.exe`: single-file self-contained Windows x64 build.
+- `TaskbarStats-v1.1.1-win-x64-framework.zip`: smaller framework-dependent Windows x64 build.
 
 The `dist/` directory and ZIP archives are release artifacts and are excluded from the source repository.
