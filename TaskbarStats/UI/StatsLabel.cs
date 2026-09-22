@@ -81,6 +81,15 @@ public sealed class StatsLabel : Form
         }
     }
 
+    public void SetAlwaysOnTop(bool enabled)
+    {
+        TopMost = enabled;
+        if (enabled)
+        {
+            BringToFront();
+        }
+    }
+
     private Point ComputeLocation()
     {
         var wa = SystemInformation.WorkingArea;

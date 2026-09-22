@@ -37,6 +37,7 @@ public sealed class TrayApp : IDisposable
     private readonly NetSampler _netSampler = new();
     private readonly StatsHistory _history = new();
     private readonly ToolStripMenuItem _autoStartItem;
+    private readonly ToolStripMenuItem _alwaysOnTopItem;
     private readonly ToolStripMenuItem _labelsMenu;
     private readonly StatsLabel _label;
 
@@ -66,6 +67,13 @@ public sealed class TrayApp : IDisposable
         menu.Items.Add("履歴を表示", null, (_, _) => ShowHistoryForm());
         _labelsMenu = new ToolStripMenuItem("表示ラベル");
         menu.Items.Add(_labelsMenu);
+        _alwaysOnTopItem = new ToolStripMenuItem("最前面に固定: ON")
+        {
+            CheckOnClick = true,
+            Checked = true,
+        };
+        _alwaysOnTopItem.CheckedChanged += (_, _) => ToggleAlwaysOnTop();
+        menu.Items.Add(_alwaysOnTopItem);
         _autoStartItem = new ToolStripMenuItem("自動実行: OFF", null, (_, _) => ToggleAutoStart());
         menu.Items.Add(_autoStartItem);
         menu.Items.Add(new ToolStripSeparator());
@@ -194,6 +202,13 @@ public sealed class TrayApp : IDisposable
     {
         AutoStart.SetEnabled(!AutoStart.IsEnabled());
         RefreshAutoStartLabel();
+    }
+
+    private void ToggleAlwaysOnTop()
+    {
+        bool enabled = _alwaysOnTopItem.Checked;
+        _label.SetAlwaysOnTop(enabled);
+        _alwaysOnTopItem.Text = enabled ? "最前面に固定: ON" : "最前面に固定: OFF";
     }
 
     private void RefreshAutoStartLabel()
