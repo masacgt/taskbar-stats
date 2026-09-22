@@ -1,6 +1,6 @@
 # TaskbarStats
 
-Version 1.1.0
+Version 1.2.0
 
 Windows のシステムトレイに CPU / RAM / GPU / VRAM / ディスク / ネットワークの使用率を表示する軽量なトレイアプリケーションです。
 
@@ -13,7 +13,8 @@ Windows のシステムトレイに CPU / RAM / GPU / VRAM / ディスク / ネ�
   - VRAM 使用量 / 総量
   - GPU 温度・クロック（取得できる場合）
   - 物理ディスクごとのアクティブな時間 %（Disk1, Disk2, …）
-  - イーサネット速度（NET, Mbps）
+  - 有線LAN速度（LAN, Mbps）
+  - Wi-Fi速度（WIFI, Mbps）
 - **タスクバー右端の常時ラベル**（固定幅、非表示ラベルは右に詰まる）
 - **表示ラベルの選択**（右クリック「表示ラベル」で各ラベルのチェック ON/OFF）
 - **最前面表示の切り替え**（右クリック「最前面に固定: ON/OFF」）
@@ -26,20 +27,17 @@ Windows のシステムトレイに CPU / RAM / GPU / VRAM / ディスク / ネ�
 
 ## Download and run
 
-Download one of the following packages from GitHub Releases:
+Download the latest release from the [TaskbarStats GitHub repository](https://github.com/masacgt/taskbar-stats).
 
-- [TaskbarStats.exe](https://github.com/masacgt/taskbar-stats/releases/latest/download/TaskbarStats.exe)
-  - Single-file self-contained build
-  - .NET 8 is not required
-- [TaskbarStats-v1.1.1-win-x64-framework.zip](https://github.com/masacgt/taskbar-stats/releases/latest/download/TaskbarStats-v1.1.1-win-x64-framework.zip)
-  - Smaller framework-dependent build
-  - Requires the .NET 8 Desktop Runtime
+- [Download the latest release](https://github.com/masacgt/taskbar-stats/releases/latest)
+- [Download v1.2.0 ZIP](https://github.com/masacgt/taskbar-stats/releases/download/v1.2.0/taskbar-stats-v1.2.0-win-x64.zip)
+- [Download v1.2.0 standalone EXE](https://github.com/masacgt/taskbar-stats/releases/download/v1.2.0/TaskbarStats-v1.2.0-win-x64.exe)
 
-Run the downloaded EXE, or extract the framework-dependent ZIP and run `TaskbarStats.exe`.
+The ZIP and standalone EXE are self-contained, so .NET 8 does not need to be installed separately.
 
 - ホバー: 使用率を表示
 - ダブルクリック / 右クリック「履歴を表示」: 履歴グラフ
-- 右クリック「表示ラベル」: 各ラベル（CPU / RAM / GPU / VRAM / Disk / NET）の表示切替
+- 右クリック「表示ラベル」: 各ラベル（CPU / RAM / GPU / VRAM / Disk / LAN / WIFI）の表示切替
 - 右クリック「自動実行: OFF/ON」: スタートアップ登録の切替
 - 右クリック「終了」: アプリを終了
 
@@ -75,7 +73,7 @@ TaskbarStats/
   Samplers/AmdSampler.cs        GPU（ADL2）
   Samplers/GpuDetector.cs       GPU ベンダ自動検出
   Samplers/DiskSampler.cs       ディスクのアクティブ時間 %（PDH）
-  Samplers/NetSampler.cs        イーサネット速度（NetworkInformation）
+  Samplers/NetSampler.cs        有線LAN / Wi-Fi速度（NetworkInformation）
   UI/TrayApp.cs           トレイアイコン / メニュー / タイマー
   UI/HistoryForm.cs       履歴グラフ
   UI/IconFactory.cs       負荷に応じたアイコン生成
@@ -108,7 +106,8 @@ GPU が検出できない場合、GPU / VRAM の行は「-」で表示され、C
 
 ## Release package
 
-- `TaskbarStats.exe`: single-file self-contained Windows x64 build.
-- `TaskbarStats-v1.1.1-win-x64-framework.zip`: smaller framework-dependent Windows x64 build.
+- [`taskbar-stats-v1.2.0-win-x64.zip`](https://github.com/masacgt/taskbar-stats/releases/download/v1.2.0/taskbar-stats-v1.2.0-win-x64.zip): self-contained Windows x64 package.
+- [`TaskbarStats-v1.2.0-win-x64.exe`](https://github.com/masacgt/taskbar-stats/releases/download/v1.2.0/TaskbarStats-v1.2.0-win-x64.exe): self-contained standalone executable.
 
 The `dist/` directory and ZIP archives are release artifacts and are excluded from the source repository.
+
