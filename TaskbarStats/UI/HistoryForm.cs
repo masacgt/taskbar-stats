@@ -1,6 +1,7 @@
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using TaskbarStats.Models;
+using TaskbarStats.Utils;
 
 namespace TaskbarStats.UI;
 
@@ -17,16 +18,26 @@ public sealed class HistoryForm : Form
     };
 
     private readonly StatsHistory _history;
+    private readonly AppSettings _settings;
     private readonly System.Windows.Forms.Timer _timer;
 
-    public HistoryForm(StatsHistory history)
+    public HistoryForm(StatsHistory history, AppSettings settings)
     {
         _history = history;
+        _settings = settings;
 
         Text = UiText.HistoryTitle;
-        StartPosition = FormStartPosition.CenterScreen;
-        ClientSize = new Size(640, 440);
         MinimumSize = new Size(420, 300);
+        if (TryGetSavedBounds(settings, out Rectangle bounds))
+        {
+            StartPosition = FormStartPosition.Manual;
+            Bounds = bounds;
+        }
+        else
+        {
+            StartPosition = FormStartPosition.CenterScreen;
+            ClientSize = new Size(640, 440);
+        }
         BackColor = Color.FromArgb(30, 30, 34);
         ForeColor = Color.FromArgb(225, 225, 230);
         DoubleBuffered = true;
@@ -127,8 +138,38 @@ public sealed class HistoryForm : Form
 
     protected override void OnFormClosed(FormClosedEventArgs e)
     {
+        if (WindowState == FormWindowState.Normal)
+        {
+            _settings.HistoryX = Bounds.X;
+            _settings.HistoryY = Bounds.Y;
+            _settings.HistoryWidth = Bounds.Width;
+            _settings.HistoryHeight = Bounds.Height;
+            SettingsStore.Save(_settings);
+        }
+
         _timer.Stop();
         _timer.Dispose();
         base.OnFormClosed(e);
+    }
+
+    private static bool TryGetSavedBounds(AppSettings settings, out Rectangle bounds)
+    {
+        bounds = default;
+        if (settings.HistoryX is not int x
+            || settings.HistoryY is not int y
+            || settings.HistoryWidth is not int width
+            || settings.HistoryHeight is not int height
+            || width < 420
+            || height < 300)
+        {
+            return false;
+        }
+
+        var savedBounds = new Rectangle(x, y, width, height);
+        if (!Screen.AllScreens.Any(screen => screen.WorkingArea.IntersectsWith(savedBounds)))
+            return false;
+
+        bounds = savedBounds;
+        return true;
     }
 }

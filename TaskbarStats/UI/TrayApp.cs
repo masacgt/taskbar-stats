@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using TaskbarStats.Models;
@@ -79,6 +80,10 @@ public sealed class TrayApp : IDisposable
         _autoStartItem = new ToolStripMenuItem(UiText.AutoStart(false), null, (_, _) => ToggleAutoStart());
         menu.Items.Add(_autoStartItem);
         menu.Items.Add(new ToolStripSeparator());
+        menu.Items.Add(UiText.ResetSettings, null, (_, _) => ResetSettings());
+        menu.Items.Add(UiText.OpenLogFolder, null, (_, _) => OpenLogFolder());
+        menu.Items.Add(UiText.CheckForUpdates, null, (_, _) => OpenReleases());
+        menu.Items.Add(new ToolStripSeparator());
         menu.Items.Add(UiText.Exit, null, (_, _) => Exit());
         _notifyIcon.ContextMenuStrip = menu;
         RebuildLabelMenu();
@@ -87,6 +92,13 @@ public sealed class TrayApp : IDisposable
         _label = new StatsLabel();
         _label.SetAlwaysOnTop(_settings.AlwaysOnTop);
         _label.Show();
+
+        if (!_settings.StartupNoticeShown)
+        {
+            _settings.StartupNoticeShown = true;
+            SaveSettings();
+            _notifyIcon.ShowBalloonTip(3000, UiText.StartedTitle, UiText.StartedBody, ToolTipIcon.Info);
+        }
 
         _timer = new System.Timers.Timer(1000) { AutoReset = true };
         _timer.Elapsed += OnTick;
@@ -195,7 +207,7 @@ public sealed class TrayApp : IDisposable
             return;
         }
 
-        var historyForm = new HistoryForm(_history);
+        var historyForm = new HistoryForm(_history, _settings);
         historyForm.FormClosed += (_, _) => _historyForm = null;
         _historyForm = historyForm;
         historyForm.Show();
@@ -206,6 +218,68 @@ public sealed class TrayApp : IDisposable
     {
         AutoStart.SetEnabled(!AutoStart.IsEnabled());
         RefreshAutoStartLabel();
+    }
+
+    private void ResetSettings()
+    {
+        if (MessageBox.Show(UiText.ResetConfirm, UiText.ResetConfirmTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
+        {
+            return;
+        }
+
+        _historyForm?.Close();
+        _hiddenLabels.Clear();
+        _settings.AlwaysOnTop = true;
+        _settings.HistoryX = null;
+        _settings.HistoryY = null;
+        _settings.HistoryWidth = null;
+        _settings.HistoryHeight = null;
+        AutoStart.SetEnabled(false);
+        _alwaysOnTopItem.Checked = true;
+        _alwaysOnTopItem.Text = UiText.AlwaysOnTop(true);
+        _label.SetAlwaysOnTop(true);
+        RebuildLabelMenu();
+        RefreshAutoStartLabel();
+        SaveSettings();
+        MessageBox.Show(UiText.ResetDone, UiText.ResetConfirmTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
+    }
+
+    private static void OpenLogFolder()
+    {
+        try
+        {
+            string? directory = Path.GetDirectoryName(CrashLog.FilePath);
+            if (!string.IsNullOrEmpty(directory))
+            {
+                Directory.CreateDirectory(directory);
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "explorer.exe",
+                    Arguments = $"/select,\"{CrashLog.FilePath}\"",
+                    UseShellExecute = true,
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            CrashLog.Write("open log folder failed", ex);
+        }
+    }
+
+    private static void OpenReleases()
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "https://github.com/masacgt/taskbar-stats/releases/latest",
+                UseShellExecute = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            CrashLog.Write("open releases failed", ex);
+        }
     }
 
     private void ToggleAlwaysOnTop()

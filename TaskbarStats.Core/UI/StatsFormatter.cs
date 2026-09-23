@@ -40,8 +40,8 @@ public static class StatsFormatter
         "RAM" => FormatPercent(sample.RamPercent),
         "GPU" => FormatPercent(sample.GpuPercent),
         "VRAM" => FormatPercent(sample.VramPercent),
-        LanLabel => FormatMbits(sample.LanMbps) + "Mbps",
-        WifiLabel => FormatMbits(sample.WifiMbps) + "Mbps",
+        LanLabel => FormatNetwork(sample.LanMbps),
+        WifiLabel => FormatNetwork(sample.WifiMbps),
         _ when TryGetDiskNumber(label, out int number)
             && sample.DiskBusyPercents is { } disks
             && number - 1 < disks.Length
@@ -100,12 +100,12 @@ public static class StatsFormatter
 
                     break;
                 case LanLabel:
-                    string lanValue = sample.LanMbps is { } lan ? NetMath.ClampMbps(lan).ToString() : "--";
-                    lines.Add($"LAN   {lanValue}Mbps");
+                    string lanValue = sample.LanMbps is { } lan ? NetMath.ClampMbps(lan).ToString() + "Mbps" : "--";
+                    lines.Add($"LAN   {lanValue}");
                     break;
                 case WifiLabel:
-                    string wifiValue = sample.WifiMbps is { } wifi ? NetMath.ClampMbps(wifi).ToString() : "--";
-                    lines.Add($"WIFI  {wifiValue}Mbps");
+                    string wifiValue = sample.WifiMbps is { } wifi ? NetMath.ClampMbps(wifi).ToString() + "Mbps" : "--";
+                    lines.Add($"WIFI  {wifiValue}");
                     break;
                 default:
                     if (TryGetDiskNumber(label, out int number)
@@ -144,6 +144,9 @@ public static class StatsFormatter
 
     public static string FormatGib(long bytes)
         => bytes > 0 ? (bytes / 1073741824.0).ToString("F1") : "0.0";
+
+    private static string FormatNetwork(double? value)
+        => value is { } v ? FormatMbits(v) + "Mbps" : "  --";
 
     public static bool TryGetDiskNumber(string label, out int number)
     {

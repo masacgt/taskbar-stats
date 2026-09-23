@@ -7,6 +7,16 @@ public sealed class AppSettings
     public HashSet<string> HiddenLabels { get; set; } = new(StringComparer.Ordinal);
 
     public bool AlwaysOnTop { get; set; } = true;
+
+    public bool StartupNoticeShown { get; set; }
+
+    public int? HistoryX { get; set; }
+
+    public int? HistoryY { get; set; }
+
+    public int? HistoryWidth { get; set; }
+
+    public int? HistoryHeight { get; set; }
 }
 
 public static class SettingsStore

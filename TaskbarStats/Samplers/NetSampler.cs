@@ -55,8 +55,21 @@ public sealed class NetSampler
                 }
             }
 
-            double? lan = CalculateMbps(lanRx, lanTx, ref _lastLanRx, ref _lastLanTx, ref _hasLanBaseline);
-            double? wifi = CalculateMbps(wifiRx, wifiTx, ref _lastWifiRx, ref _lastWifiTx, ref _hasWifiBaseline);
+            double? lan = _ethernetNames.Length == 0
+                ? null
+                : CalculateMbps(lanRx, lanTx, ref _lastLanRx, ref _lastLanTx, ref _hasLanBaseline);
+            double? wifi = _wifiNames.Length == 0
+                ? null
+                : CalculateMbps(wifiRx, wifiTx, ref _lastWifiRx, ref _lastWifiTx, ref _hasWifiBaseline);
+            if (_ethernetNames.Length == 0)
+            {
+                _hasLanBaseline = false;
+            }
+
+            if (_wifiNames.Length == 0)
+            {
+                _hasWifiBaseline = false;
+            }
             return (lan, wifi);
         }
         catch (Exception ex)

@@ -46,8 +46,8 @@ If Windows SmartScreen appears, confirm the publisher and file name before runni
 - **GPU**: GPU utilization
 - **VRAM**: GPU memory utilization
 - **Disk1, Disk2, ...**: Active time for each physical disk
-- **LAN**: Wired LAN transfer speed in Mbps
-- **WIFI**: Wi-Fi transfer speed in Mbps
+- **LAN**: Wired LAN transfer speed in Mbps. Shows `--` when disconnected.
+- **WIFI**: Wi-Fi transfer speed in Mbps. Shows `--` when disconnected.
 
 Right-click the tray icon and open **Display labels** to show or hide each metric. Hiding unused metrics keeps the taskbar display compact.
 
@@ -61,11 +61,14 @@ Right-click the tray icon or taskbar display to access these actions.
 | Display labels | Shows or hides CPU, RAM, GPU, VRAM, Disk, LAN, and WIFI. |
 | Always on top | Keeps the taskbar display above other windows. |
 | Startup | Toggles launch at Windows sign-in. |
+| Reset settings | Restores display labels, always-on-top, startup, and history window position and size. |
+| Open log folder | Opens the folder containing diagnostic logs. |
+| Check for updates | Opens the latest GitHub release page. |
 | Exit | Exits the application. |
 
 The tray icon turns yellow at 70% load and red at 90% load.
 
-Display label choices and the **Always on top** setting are saved to `%LOCALAPPDATA%\\TaskbarStats\\settings.json` and restored on the next launch. History data and the history window position and size are not saved when the app exits.
+Display label choices, the **Always on top** setting, and the history window position and size are saved to `%LOCALAPPDATA%\\TaskbarStats\\settings.json` and restored on the next launch. History graph data itself is not saved when the app exits. A startup notification is shown once on the first launch.
 
 ## Display language
 
@@ -97,7 +100,7 @@ CPU, RAM, disk, LAN, and WIFI monitoring continue to work when no supported GPU 
 
 ## Troubleshooting
 
-1. Check Task Manager to make sure `TaskbarStats.exe` is not already running. The app prevents multiple instances.
+1. Check Task Manager to make sure `TaskbarStats.exe` is not already running. If it is already running, the app shows a duplicate-launch message.
 2. If using the ZIP package, extract all files before starting the EXE.
 3. Check whether Windows Defender or another security product quarantined the file.
 4. If the display does not update, check `%LOCALAPPDATA%\\TaskbarStats\\crash.log`.

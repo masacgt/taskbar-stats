@@ -5,6 +5,10 @@
 - Added automatic UI language selection based on the Windows display language: Japanese for `ja-*`, English otherwise.
 - Added Japanese and English README links and a complete English README.
 - Saved display label and always-on-top settings across restarts.
+- Added a one-time startup notification and a friendly duplicate-launch message.
+- Added settings reset, log-folder, and latest-release menu actions.
+- Saved the history window position and size across restarts.
+- Showed `--` for LAN or WIFI when the corresponding adapter is unavailable.
 
 ## v1.2.0
 
