@@ -12,11 +12,11 @@ Windowsのタスクバー右端に、CPU・メモリ・GPU・ディスク・ネ�
 
 通常表示:
 
-![TaskbarStats 通常表示](docs/images/taskbar-stats.jpg)
+![TaskbarStats 通常表示](docs/images/taskbar-stats.png)
 
 右クリックメニューと表示項目の選択:
 
-![TaskbarStats 設定メニュー](docs/images/taskbar-stats-menu.jpg)
+![TaskbarStats 設定メニュー](docs/images/taskbar-stats-menu.png)
 
 ## ダウンロード
 
