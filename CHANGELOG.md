@@ -1,5 +1,9 @@
 # Changelog
 
+## Next
+
+- Added automatic UI language selection based on the Windows display language: Japanese for `ja-*`, English otherwise.
+
 ## v1.2.0
 
 - Fixed taskbar labels remaining at `--` when the notification tooltip exceeded the Windows `NotifyIcon.Text` limit.

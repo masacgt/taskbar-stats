@@ -64,20 +64,20 @@ public sealed class TrayApp : IDisposable
         _notifyIcon.DoubleClick += (_, _) => ShowHistoryForm();
 
         var menu = new ContextMenuStrip();
-        menu.Items.Add("履歴を表示", null, (_, _) => ShowHistoryForm());
-        _labelsMenu = new ToolStripMenuItem("表示ラベル");
+        menu.Items.Add(UiText.History, null, (_, _) => ShowHistoryForm());
+        _labelsMenu = new ToolStripMenuItem(UiText.Labels);
         menu.Items.Add(_labelsMenu);
-        _alwaysOnTopItem = new ToolStripMenuItem("最前面に固定: ON")
+        _alwaysOnTopItem = new ToolStripMenuItem(UiText.AlwaysOnTop(true))
         {
             CheckOnClick = true,
             Checked = true,
         };
         _alwaysOnTopItem.CheckedChanged += (_, _) => ToggleAlwaysOnTop();
         menu.Items.Add(_alwaysOnTopItem);
-        _autoStartItem = new ToolStripMenuItem("自動実行: OFF", null, (_, _) => ToggleAutoStart());
+        _autoStartItem = new ToolStripMenuItem(UiText.AutoStart(false), null, (_, _) => ToggleAutoStart());
         menu.Items.Add(_autoStartItem);
         menu.Items.Add(new ToolStripSeparator());
-        menu.Items.Add("終了", null, (_, _) => Exit());
+        menu.Items.Add(UiText.Exit, null, (_, _) => Exit());
         _notifyIcon.ContextMenuStrip = menu;
         RebuildLabelMenu();
         RefreshAutoStartLabel();
@@ -209,12 +209,12 @@ public sealed class TrayApp : IDisposable
     {
         bool enabled = _alwaysOnTopItem.Checked;
         _label.SetAlwaysOnTop(enabled);
-        _alwaysOnTopItem.Text = enabled ? "最前面に固定: ON" : "最前面に固定: OFF";
+        _alwaysOnTopItem.Text = UiText.AlwaysOnTop(enabled);
     }
 
     private void RefreshAutoStartLabel()
     {
-        _autoStartItem.Text = AutoStart.IsEnabled() ? "自動実行: ON" : "自動実行: OFF";
+        _autoStartItem.Text = UiText.AutoStart(AutoStart.IsEnabled());
     }
 
     private void Exit()

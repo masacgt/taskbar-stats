@@ -23,7 +23,7 @@ public sealed class HistoryForm : Form
     {
         _history = history;
 
-        Text = "TaskbarStats - 履歴 (直近5分)";
+        Text = UiText.HistoryTitle;
         StartPosition = FormStartPosition.CenterScreen;
         ClientSize = new Size(640, 440);
         MinimumSize = new Size(420, 300);
@@ -66,7 +66,7 @@ public sealed class HistoryForm : Form
 
         string statsText = values.Count > 0
             ? $"min {min:F0}%   avg {avg:F0}%   max {max:F0}%"
-            : "データ待ち...";
+            : UiText.WaitingForData;
         using (var statsBrush = new SolidBrush(Color.FromArgb(175, 175, 185)))
         using (var rightAlign = new StringFormat { Alignment = StringAlignment.Far })
         {

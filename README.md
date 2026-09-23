@@ -22,18 +22,9 @@ Windows のシステムトレイに CPU / RAM / GPU / VRAM / ディスク / ネ�
 - **履歴グラフ**（ダブルクリックまたは右クリックメニューから表示）
   - CPU / RAM / GPU / VRAM を直近約 5 分分の折れ線で表示（min / avg / max 付き）
 - **スタートアップ自動実行**（右クリックメニューで ON/OFF、`HKCU\...\Run` に登録）
+- **表示言語の自動判定**（Windows の表示言語が日本語の場合は日本語、それ以外は英語）
 - 単一インスタンス（Mutex で二重起動を防止）
 - 自己完結したビルド（.NET 8 不要で実行可能）
-
-## Screenshots
-
-通常表示:
-
-![TaskbarStats 通常表示](docs/images/taskbar-stats.jpg)
-
-右クリックメニューと表示ラベルの選択:
-
-![TaskbarStats 設定メニュー](docs/images/taskbar-stats-menu.jpg)
 
 ## Download and run
 
@@ -50,6 +41,8 @@ The ZIP and standalone EXE are self-contained, so .NET 8 does not need to be ins
 - 右クリック「表示ラベル」: 各ラベル（CPU / RAM / GPU / VRAM / Disk / LAN / WIFI）の表示切替
 - 右クリック「自動実行: OFF/ON」: スタートアップ登録の切替
 - 右クリック「終了」: アプリを終了
+
+The user interface automatically follows the Windows display language. Japanese Windows uses Japanese labels; other Windows display languages use English labels.
 
 ## Build
 
