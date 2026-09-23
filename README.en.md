@@ -12,11 +12,11 @@ The display updates every second. Use the tray icon context menu to select displ
 
 Normal display:
 
-![TaskbarStats normal display](docs/images/taskbar-stats.png)
+![TaskbarStats normal display](docs/images/taskbar-stats.jpg)
 
 Context menu and metric selection:
 
-![TaskbarStats settings menu](docs/images/taskbar-stats-menu.png)
+![TaskbarStats settings menu](docs/images/taskbar-stats-menu.jpg)
 
 ## Download
 
