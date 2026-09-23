@@ -1,115 +1,148 @@
 # TaskbarStats
 
-Version 1.2.0
+Windowsのタスクバー右端に、CPU・メモリ・GPU・ディスク・ネットワークの状態を常時表示する軽量なシステムモニターです。
 
-Windows のシステムトレイに CPU / RAM / GPU / VRAM / ディスク / ネットワークの使用率を表示する軽量なトレイアプリケーションです。
+タスクバー上の表示は1秒ごとに更新され、トレイアイコンの右クリックメニューから表示項目、最前面表示、スタートアップ起動を変更できます。インストール作業は不要で、ダウンロードしたEXEまたはZIPから起動できます。
 
-## 機能
+## スクリーンショット
 
-- **トレイアイコン + ホバーツールチップ** で 1 秒ごとに更新
-  - CPU 使用率
-  - RAM 使用率（使用量 / 総量）
-  - GPU 使用率（NVIDIA: NVAPI / AMD: ADL2 を自動検出）
-  - VRAM 使用量 / 総量
-  - GPU 温度・クロック（取得できる場合）
-  - 物理ディスクごとのアクティブな時間 %（Disk1, Disk2, …）
-  - 有線LAN速度（LAN, Mbps）
-  - Wi-Fi速度（WIFI, Mbps）
-- **タスクバー右端の常時ラベル**（固定幅、非表示ラベルは右に詰まる）
-- **表示ラベルの選択**（右クリック「表示ラベル」で各ラベルのチェック ON/OFF）
-- **最前面表示の切り替え**（右クリック「最前面に固定: ON/OFF」）
-- **負荷によるアイコンの色変化**: 70% 以上で黄色、90% 以上で赤
-- **履歴グラフ**（ダブルクリックまたは右クリックメニューから表示）
-  - CPU / RAM / GPU / VRAM を直近約 5 分分の折れ線で表示（min / avg / max 付き）
-- **スタートアップ自動実行**（右クリックメニューで ON/OFF、`HKCU\...\Run` に登録）
-- **表示言語の自動判定**（Windows の表示言語が日本語の場合は日本語、それ以外は英語）
-- 単一インスタンス（Mutex で二重起動を防止）
-- 自己完結したビルド（.NET 8 不要で実行可能）
+通常表示:
 
-## Download and run
+![TaskbarStats 通常表示](docs/images/taskbar-stats.jpg)
 
-Download the latest release from the [TaskbarStats GitHub repository](https://github.com/masacgt/taskbar-stats).
+右クリックメニューと表示項目の選択:
 
-- [Download the latest release](https://github.com/masacgt/taskbar-stats/releases/latest)
-- [Download v1.2.0 ZIP](https://github.com/masacgt/taskbar-stats/releases/download/v1.2.0/taskbar-stats-v1.2.0-win-x64.zip)
-- [Download v1.2.0 standalone EXE](https://github.com/masacgt/taskbar-stats/releases/download/v1.2.0/TaskbarStats-v1.2.0-win-x64.exe)
+![TaskbarStats 設定メニュー](docs/images/taskbar-stats-menu.jpg)
 
-The ZIP and standalone EXE are self-contained, so .NET 8 does not need to be installed separately.
+## ダウンロード
 
-- ホバー: 使用率を表示
-- ダブルクリック / 右クリック「履歴を表示」: 履歴グラフ
-- 右クリック「表示ラベル」: 各ラベル（CPU / RAM / GPU / VRAM / Disk / LAN / WIFI）の表示切替
-- 右クリック「自動実行: OFF/ON」: スタートアップ登録の切替
-- 右クリック「終了」: アプリを終了
+最新版は[Releasesページ](https://github.com/masacgt/taskbar-stats/releases)からダウンロードできます。
 
-The user interface automatically follows the Windows display language. Japanese Windows uses Japanese labels; other Windows display languages use English labels.
+| ファイル | 用途 |
+|---|---|
+| [ZIP版](https://github.com/masacgt/taskbar-stats/releases/download/v1.2.0/taskbar-stats-v1.2.0-win-x64.zip) | EXEと必要なファイルをまとめた通常版。展開して使用します。 |
+| [単体EXE版](https://github.com/masacgt/taskbar-stats/releases/download/v1.2.0/TaskbarStats-v1.2.0-win-x64.exe) | 1ファイルで起動できます。持ち運びに便利です。 |
+| [最新版を表示](https://github.com/masacgt/taskbar-stats/releases/latest) | 今後の最新版を確認できます。 |
 
-## Build
+ZIP版と単体EXE版は自己完結型です。実行するPCに.NET 8 Runtimeを別途インストールする必要はありません。
 
-.NET 8 SDK が必要です。
+### 初回起動
+
+1. ZIP版は任意のフォルダーに展開します。
+2. `TaskbarStats.exe`を起動します。
+3. タスクバー右端に統計情報が表示されます。
+4. 終了する場合は、表示部分またはトレイアイコンを右クリックして「終了」を選択します。
+
+Windows SmartScreenが表示された場合は、配布元とファイル名を確認してから実行してください。
+
+## 表示される項目
+
+- **CPU**: CPU使用率
+- **RAM**: メモリ使用率
+- **GPU**: GPU使用率
+- **VRAM**: GPUメモリ使用率
+- **Disk1, Disk2, ...**: 物理ディスクごとのアクティブ時間
+- **LAN**: 有線LANの送受信速度（Mbps）
+- **WIFI**: Wi-Fiの送受信速度（Mbps）
+
+表示項目は、トレイアイコンを右クリックして「表示ラベル」から個別にON/OFFできます。使用していない項目を非表示にすると、タスクバー上の表示が詰まって見やすくなります。
+
+## 操作方法
+
+トレイアイコンまたはタスクバーの統計表示を右クリックすると、次の操作ができます。
+
+| 操作 | 内容 |
+|---|---|
+| 履歴を表示 | CPU・RAM・GPU・VRAMの直近約5分のグラフを表示します。ダブルクリックでも開けます。 |
+| 表示ラベル | CPU、RAM、GPU、VRAM、Disk、LAN、WIFIの表示を切り替えます。 |
+| 最前面に固定 | タスクバー表示を他のウィンドウより前面に固定します。 |
+| 自動実行 | Windowsへのサインイン時に自動起動するかを切り替えます。 |
+| 終了 | アプリを終了します。 |
+
+負荷が70%以上になるとアイコンが黄色、90%以上になると赤色に変わります。
+
+## 表示言語
+
+表示言語はWindowsの表示言語から自動判定します。言語メニューや個別設定はありません。
+
+- Windowsの表示言語が日本語（`ja-*`）の場合: 日本語
+- それ以外の表示言語の場合: 英語
+
+数値ラベル（CPU、RAM、GPU、LAN、WIFIなど）はどの言語でも共通です。
+
+## GPU対応
+
+| GPU | 使用率 | VRAM | 温度 | クロック |
+|---|---:|---:|---:|---:|
+| NVIDIA | ○ | ○ | ○ | ○ |
+| AMD | ○ | ○ | ○ | ○ |
+| その他 | ○ | ○ | - | - |
+
+NVIDIAではNVAPI、AMDではADL2を優先して使用します。メーカーAPIを利用できない場合は、WindowsのPerformance Data Helper（PDH）とDXGIを使用してGPU使用率とVRAMを取得します。
+
+GPUが検出できない環境でも、CPU・RAM・ディスク・LAN・WIFIの表示は利用できます。GPUとVRAMは`-`または`--`で表示されます。
+
+## 動作環境
+
+- Windows 10 / 11
+- x64 PC
+- ZIP版・単体EXE版は.NET 8 Runtime不要
+- GPU機能は搭載GPUとドライバーの対応状況に依存します
+
+## 起動できない場合
+
+1. タスクマネージャーで`TaskbarStats.exe`が既に起動していないか確認します。アプリは二重起動しません。
+2. ZIP版を使用している場合は、ZIPの中身をすべて展開してからEXEを起動します。
+3. Windows Defenderまたはセキュリティソフトが隔離していないか確認します。
+4. 実行後に表示が更新されない場合は、`%LOCALAPPDATA%\TaskbarStats\crash.log`を確認します。
+5. それでも起動しない場合は、使用したファイル名、Windowsのバージョン、`crash.log`の内容を添えてIssueを作成してください。
+
+## 開発者向けビルド
+
+開発には.NET 8 SDKが必要です。
 
 ```bash
-dotnet build -c Release
-dotnet test
+dotnet restore
+dotnet build TaskbarStats.sln -c Release
+dotnet test TaskbarStats.sln -c Release
 ```
 
-### Windows 用ビルドを作成
+自己完結型のWindows x64版を作成する場合:
 
 ```bash
-dotnet publish TaskbarStats/TaskbarStats.csproj -c Release -r win-x64 --self-contained true -o dist
-dotnet publish TaskbarStats/TaskbarStats.csproj -c Release -r win-x64 --self-contained false -o dist-framework
+dotnet publish TaskbarStats/TaskbarStats.csproj \
+  -c Release \
+  -r win-x64 \
+  --self-contained true \
+  -p:PublishSingleFile=true \
+  -p:IncludeNativeLibrariesForSelfExtract=true \
+  -o dist
 ```
 
-`dist/` の中身（`TaskbarStats.exe` 一式）が完成品です（Linux からのクロスコンパイルでも動作します）。
+フレームワーク依存版を作成する場合:
 
-- `dist/`: .NET 8 未インストールの PC でも動作する自己完結型（約 130 MB）。
-- `dist-framework/`: 軽量ですが、実行先に .NET 8 Desktop Runtime が必要です。
+```bash
+dotnet publish TaskbarStats/TaskbarStats.csproj \
+  -c Release \
+  -r win-x64 \
+  --self-contained false \
+  -o dist-framework
+```
 
 ## プロジェクト構成
 
-```
+```text
 TaskbarStats/
-  Program.cs            エントリポイント（単一インスタンス管理）
-  Samplers/CpuSampler.cs        CPU（GetSystemTimes 差分）
-  Samplers/RamSampler.cs        RAM（GlobalMemoryStatusEx）
-  Samplers/NvidiaSampler.cs     GPU（NVAPI）
-  Samplers/AmdSampler.cs        GPU（ADL2）
-  Samplers/GpuDetector.cs       GPU ベンダ自動検出
-  Samplers/DiskSampler.cs       ディスクのアクティブ時間 %（PDH）
-  Samplers/NetSampler.cs        有線LAN / Wi-Fi速度（NetworkInformation）
-  UI/TrayApp.cs           トレイアイコン / メニュー / タイマー
-  UI/HistoryForm.cs       履歴グラフ
-  UI/IconFactory.cs       負荷に応じたアイコン生成
-  UI/StatsLabel.cs        タスクバー右端の常時ラベル
-  Utils/AutoStart.cs      スタートアップ登録
-TaskbarStats.Core/        純ロジック（OS 非依存）
-  Models/SystemStatsSample.cs   1 サンプルのデータ構造
-  Samplers/CpuMath.cs       CPU 使用率の計算
-  Samplers/DiskAggregator.cs  ディスク番号ごとの集約
-  Samplers/NetMath.cs       Mbps 換算・上限クランプ
-  UI/StatsHistory.cs        サンプル履歴の保持
-  UI/LoadLevel.cs           負荷レベル判定（閾値 70/90）
-  UI/StatsFormatter.cs      ラベル / ツールチップ文字列生成
-TaskbarStats.Tests/       単体テスト（Core の純ロジック、Linux でも実行可）
+  Program.cs                    エントリポイントと単一インスタンス管理
+  Samplers/                     CPU、RAM、GPU、ディスク、LAN、WIFIの取得
+  UI/                           トレイメニュー、タスクバー表示、履歴画面
+  Utils/                        自動起動、ログなどのWindows連携
+TaskbarStats.Core/              OSに依存しない計算・履歴・表示整形
+TaskbarStats.Tests/             Coreの単体テスト
 ```
 
-## 対応 GPU
+## ライセンス
 
-| ベンダ | API | 使用率 | VRAM | 温度 | クロック |
-|--------|-----|--------|------|------|----------|
-| NVIDIA | NVAPI (nvapi64.dll) | ○ | ○ | ○ | ○ |
-| AMD    | ADL2 (atiadlxx.dll)  | ○ | ○ | ○ | ○ |
-| その他 | Performance (PDH) + DXGI | ○ | ○ | - | - |
+MIT License
 
-ベンダ API (NVAPI / ADL2) が読み込めない場合は Performance Sampler (PDH + DXGI) に自動フォールバックし、GPU 使用率・VRAM を表示します。
-- VRAM は DXGI の `AdapterLuid` で対象アダプタを特定し、そのアダプタ分だけ合計するため、複数 GPU 環境でも過大計上しません。
-- PDH の GPU オブジェクトが見つからない場合はカウンターを自動検出します。
 
-GPU が検出できない場合、GPU / VRAM の行は「-」で表示され、CPU / RAM の表示は通常通り動作します。
-
-## Release package
-
-- [`taskbar-stats-v1.2.0-win-x64.zip`](https://github.com/masacgt/taskbar-stats/releases/download/v1.2.0/taskbar-stats-v1.2.0-win-x64.zip): self-contained Windows x64 package.
-- [`TaskbarStats-v1.2.0-win-x64.exe`](https://github.com/masacgt/taskbar-stats/releases/download/v1.2.0/TaskbarStats-v1.2.0-win-x64.exe): self-contained standalone executable.
-
-The `dist/` directory and ZIP archives are release artifacts and are excluded from the source repository.
