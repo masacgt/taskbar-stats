@@ -4,6 +4,7 @@
 
 - Added automatic UI language selection based on the Windows display language: Japanese for `ja-*`, English otherwise.
 - Added Japanese and English README links and a complete English README.
+- Saved display label and always-on-top settings across restarts.
 
 ## v1.2.0
 

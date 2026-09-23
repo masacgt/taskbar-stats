@@ -65,6 +65,8 @@ Right-click the tray icon or taskbar display to access these actions.
 
 The tray icon turns yellow at 70% load and red at 90% load.
 
+Display label choices and the **Always on top** setting are saved to `%LOCALAPPDATA%\\TaskbarStats\\settings.json` and restored on the next launch. History data and the history window position and size are not saved when the app exits.
+
 ## Display language
 
 The user interface is selected automatically from the Windows display language. There is no language menu or per-user language setting.

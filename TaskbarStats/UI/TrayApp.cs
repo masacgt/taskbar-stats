@@ -40,17 +40,19 @@ public sealed class TrayApp : IDisposable
     private readonly ToolStripMenuItem _alwaysOnTopItem;
     private readonly ToolStripMenuItem _labelsMenu;
     private readonly StatsLabel _label;
+    private readonly AppSettings _settings = SettingsStore.Load();
 
     private HistoryForm? _historyForm;
     private Icon? _currentIcon;
     private int _tickCount;
     private string[] _labelOrder = StatsFormatter.BuildLabelOrder(0);
     private int _diskCount;
-    private readonly HashSet<string> _hiddenLabels = new(StringComparer.Ordinal);
+    private readonly HashSet<string> _hiddenLabels;
     private SystemStatsSample? _lastSample;
 
     public TrayApp()
     {
+        _hiddenLabels = new HashSet<string>(_settings.HiddenLabels, StringComparer.Ordinal);
         _gpuSampler = GpuDetector.Create();
         _diskSampler = DiskSampler.TryCreate();
         _currentIcon = IconFactory.Create(LoadLevelClassifier.GetLevel(0), 0);
@@ -67,10 +69,10 @@ public sealed class TrayApp : IDisposable
         menu.Items.Add(UiText.History, null, (_, _) => ShowHistoryForm());
         _labelsMenu = new ToolStripMenuItem(UiText.Labels);
         menu.Items.Add(_labelsMenu);
-        _alwaysOnTopItem = new ToolStripMenuItem(UiText.AlwaysOnTop(true))
+        _alwaysOnTopItem = new ToolStripMenuItem(UiText.AlwaysOnTop(_settings.AlwaysOnTop))
         {
             CheckOnClick = true,
-            Checked = true,
+            Checked = _settings.AlwaysOnTop,
         };
         _alwaysOnTopItem.CheckedChanged += (_, _) => ToggleAlwaysOnTop();
         menu.Items.Add(_alwaysOnTopItem);
@@ -83,6 +85,7 @@ public sealed class TrayApp : IDisposable
         RefreshAutoStartLabel();
 
         _label = new StatsLabel();
+        _label.SetAlwaysOnTop(_settings.AlwaysOnTop);
         _label.Show();
 
         _timer = new System.Timers.Timer(1000) { AutoReset = true };
@@ -210,6 +213,8 @@ public sealed class TrayApp : IDisposable
         bool enabled = _alwaysOnTopItem.Checked;
         _label.SetAlwaysOnTop(enabled);
         _alwaysOnTopItem.Text = UiText.AlwaysOnTop(enabled);
+        _settings.AlwaysOnTop = enabled;
+        SaveSettings();
     }
 
     private void RefreshAutoStartLabel()
@@ -219,6 +224,7 @@ public sealed class TrayApp : IDisposable
 
     private void Exit()
     {
+        SaveSettings();
         _timer.Stop();
         _historyForm?.Close();
         _label.Close();
@@ -239,6 +245,12 @@ public sealed class TrayApp : IDisposable
 
     private string[] VisibleLabels()
         => _labelOrder.Where(l => !_hiddenLabels.Contains(l)).ToArray();
+
+    private void SaveSettings()
+    {
+        _settings.HiddenLabels = new HashSet<string>(_hiddenLabels, StringComparer.Ordinal);
+        SettingsStore.Save(_settings);
+    }
 
     private void RefreshNow()
     {
@@ -279,6 +291,7 @@ public sealed class TrayApp : IDisposable
                     _hiddenLabels.Add(label);
                 }
 
+                SaveSettings();
                 RefreshNow();
             };
             _labelsMenu.DropDownItems.Add(item);
