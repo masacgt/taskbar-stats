@@ -25,6 +25,16 @@ Windows のシステムトレイに CPU / RAM / GPU / VRAM / ディスク / ネ�
 - 単一インスタンス（Mutex で二重起動を防止）
 - 自己完結したビルド（.NET 8 不要で実行可能）
 
+## Screenshots
+
+通常表示:
+
+![TaskbarStats 通常表示](docs/images/taskbar-stats.jpg)
+
+右クリックメニューと表示ラベルの選択:
+
+![TaskbarStats 設定メニュー](docs/images/taskbar-stats-menu.jpg)
+
 ## Download and run
 
 Download the latest release from the [TaskbarStats GitHub repository](https://github.com/masacgt/taskbar-stats).
