@@ -1,8 +1,9 @@
 # Changelog
 
-## Next
+## v1.3.0
 
 - Added automatic UI language selection based on the Windows display language: Japanese for `ja-*`, English otherwise.
+- Added Japanese and English README links and a complete English README.
 
 ## v1.2.0
 

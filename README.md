@@ -1,5 +1,9 @@
 # TaskbarStats
 
+[日本語](README.md) | [English](README.en.md)
+
+Version 1.3.0
+
 Windowsのタスクバー右端に、CPU・メモリ・GPU・ディスク・ネットワークの状態を常時表示する軽量なシステムモニターです。
 
 タスクバー上の表示は1秒ごとに更新され、トレイアイコンの右クリックメニューから表示項目、最前面表示、スタートアップ起動を変更できます。インストール作業は不要で、ダウンロードしたEXEまたはZIPから起動できます。
@@ -20,8 +24,8 @@ Windowsのタスクバー右端に、CPU・メモリ・GPU・ディスク・ネ�
 
 | ファイル | 用途 |
 |---|---|
-| [ZIP版](https://github.com/masacgt/taskbar-stats/releases/download/v1.2.0/taskbar-stats-v1.2.0-win-x64.zip) | EXEと必要なファイルをまとめた通常版。展開して使用します。 |
-| [単体EXE版](https://github.com/masacgt/taskbar-stats/releases/download/v1.2.0/TaskbarStats-v1.2.0-win-x64.exe) | 1ファイルで起動できます。持ち運びに便利です。 |
+| [ZIP版](https://github.com/masacgt/taskbar-stats/releases/download/v1.3.0/taskbar-stats-v1.3.0-win-x64.zip) | EXEと必要なファイルをまとめた通常版。展開して使用します。 |
+| [単体EXE版](https://github.com/masacgt/taskbar-stats/releases/download/v1.3.0/TaskbarStats-v1.3.0-win-x64.exe) | 1ファイルで起動できます。持ち運びに便利です。 |
 | [最新版を表示](https://github.com/masacgt/taskbar-stats/releases/latest) | 今後の最新版を確認できます。 |
 
 ZIP版と単体EXE版は自己完結型です。実行するPCに.NET 8 Runtimeを別途インストールする必要はありません。
